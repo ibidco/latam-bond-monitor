@@ -771,20 +771,29 @@
                             <th class="sortable" data-column="Bond">Bond</th>
                             <th class="sortable" data-column="Company">Company</th>
                             <th class="sortable" data-column="Country">Country</th>
+                            <th class="sortable" data-column="Crncy">Crncy</th>
+                            <th class="sortable" data-column="Outstdng">Outstanding</th>
                             <th class="sortable" data-column="Sector">Sector</th>
-                            <th class="sortable" data-column="Group">Rating</th>
+                            <th class="sortable" data-column="Class">Class</th>
+                            <th class="sortable" data-column="Type">Type</th>
+                            <th class="sortable" data-column="Call">Call</th>
+                            <th class="sortable" data-column="Sub">Sub</th>
                             <th class="sortable" data-column="Coupon">Coupon</th>
                             <th class="sortable" data-column="Maturity">Maturity</th>
                             <th class="sortable" data-column="Price">Price</th>
                             <th class="sortable" data-column="Duration">Duration</th>
                             <th class="sortable" data-column="YTW">YTW %</th>
                             <th class="sortable" data-column="Z sprd">Spread</th>
-                            <th class="sortable" data-column="Outstdng">Outstanding</th>
+                            <th class="sortable" data-column="S&amp;P">S&amp;P</th>
+                            <th class="sortable" data-column="Moody's ">Moody's</th>
+                            <th class="sortable" data-column="Fitch">Fitch</th>
+                            <th class="sortable" data-column="Rating">Rating</th>
+                            <th class="sortable" data-column="Group">Group</th>
                             <th data-column="Collateral">Collateral</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <tr><td colspan="13" class="loading">Loading bond data...</td></tr>
+                        <tr><td colspan="22" class="loading">Loading bond data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -14413,7 +14422,7 @@
             const resultsCount = document.getElementById('resultsCount');
 
             if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="13" class="no-data">No bonds match your criteria</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="22" class="no-data">No bonds match your criteria</td></tr>';
                 resultsCount.textContent = 'No results';
                 updateCharts([]); // Update charts with empty data
                 return;
@@ -14426,18 +14435,24 @@
                     <td><span class="bond-id">${bond.Bond || '—'}</span></td>
                     <td><span class="company-name" title="${bond.Company || ''}">${bond.Company || '—'}</span></td>
                     <td><span class="country-flag">${bond.Country || '—'}</span></td>
+                    <td>${bond.Crncy || '—'}</td>
+                    <td class="numeric">${(bond.Outstdng != null && typeof bond.Outstdng === 'number') ? bond.Outstdng.toFixed(1) + 'M' : '—'}</td>
                     <td>${bond.Sector || '—'}</td>
-                    <td>
-                        ${bond.Group ? `<span class="badge badge-${bond.Group.toLowerCase()}">${bond.Group}</span>` : '—'}
-                        ${bond.Rating ? `<span class="rating">${bond.Rating}</span>` : ''}
-                    </td>
+                    <td>${bond.Class || '—'}</td>
+                    <td>${bond.Type || '—'}</td>
+                    <td>${bond.Call || '—'}</td>
+                    <td>${bond.Sub || '—'}</td>
                     <td class="numeric">${(bond.Coupon != null && typeof bond.Coupon === 'number') ? bond.Coupon.toFixed(3) + '%' : '—'}</td>
                     <td>${bond.Maturity || '—'}</td>
                     <td class="numeric">${(bond.Price != null && typeof bond.Price === 'number') ? bond.Price.toFixed(2) : '—'}</td>
                     <td class="numeric">${(bond.Duration != null && typeof bond.Duration === 'number') ? bond.Duration.toFixed(2) : '—'}</td>
                     <td class="numeric ytw-positive">${(bond.YTW != null && typeof bond.YTW === 'number') ? bond.YTW.toFixed(2) + '%' : '—'}</td>
                     <td class="numeric spread-cell">${(bond['Z sprd'] != null && typeof bond['Z sprd'] === 'number') ? Math.round(bond['Z sprd']) + ' bps' : '—'}</td>
-                    <td class="numeric">${(bond.Outstdng != null && typeof bond.Outstdng === 'number') ? (bond.Outstdng).toFixed(1) + 'M' : '—'}</td>
+                    <td>${(bond['S&P'] != null && bond['S&P'] !== 'None') ? bond['S&P'] : '—'}</td>
+                    <td>${(bond["Moody's "] != null && bond["Moody's "] !== 'None') ? bond["Moody's "] : '—'}</td>
+                    <td>${(bond.Fitch != null && bond.Fitch !== 'None') ? bond.Fitch : '—'}</td>
+                    <td>${bond.Rating || '—'}</td>
+                    <td>${bond.Group ? `<span class="badge badge-${bond.Group.toLowerCase()}">${bond.Group}</span>` : '—'}</td>
                     <td><small>${bond.Collateral || '—'}</small></td>
                 </tr>
             `).join('');
@@ -14507,21 +14522,29 @@
 
         // Export to Excel function
         function downloadExcel() {
-            // Prepare data for export
+            // Prepare data for export - all 22 columns
             const exportData = filteredData.map(bond => ({
-                'Bond ID': bond.Bond || '',
+                'Bond': bond.Bond || '',
                 'Company': bond.Company || '',
                 'Country': bond.Country || '',
+                'Currency': bond.Crncy || '',
+                'Outstanding': bond.Outstdng != null ? bond.Outstdng : '',
                 'Sector': bond.Sector || '',
-                'Rating Group': bond.Group || '',
-                'Rating': bond.Rating || '',
+                'Class': bond.Class || '',
+                'Type': bond.Type || '',
+                'Call': bond.Call || '',
+                'Sub': bond.Sub || '',
                 'Coupon': bond.Coupon != null ? bond.Coupon : '',
                 'Maturity': bond.Maturity || '',
                 'Price': bond.Price != null ? bond.Price : '',
                 'Duration': bond.Duration != null ? bond.Duration : '',
                 'YTW': bond.YTW != null ? bond.YTW : '',
                 'Z-Spread': bond['Z sprd'] != null ? bond['Z sprd'] : '',
-                'Outstanding': bond.Outstdng != null ? bond.Outstdng : '',
+                'S&P': bond['S&P'] || '',
+                "Moody's": bond["Moody's "] || '',
+                'Fitch': bond.Fitch || '',
+                'Rating': bond.Rating || '',
+                'Group': bond.Group || '',
                 'Collateral': bond.Collateral || ''
             }));
 
@@ -14531,19 +14554,27 @@
 
             // Set column widths
             ws['!cols'] = [
-                { wch: 12 },  // Bond ID
+                { wch: 14 },  // Bond
                 { wch: 30 },  // Company
                 { wch: 10 },  // Country
+                { wch: 8 },   // Currency
+                { wch: 12 },  // Outstanding
                 { wch: 15 },  // Sector
-                { wch: 12 },  // Rating Group
-                { wch: 8 },   // Rating
+                { wch: 10 },  // Class
+                { wch: 8 },   // Type
+                { wch: 6 },   // Call
+                { wch: 6 },   // Sub
                 { wch: 10 },  // Coupon
                 { wch: 12 },  // Maturity
                 { wch: 8 },   // Price
                 { wch: 10 },  // Duration
                 { wch: 8 },   // YTW
                 { wch: 10 },  // Z-Spread
-                { wch: 12 },  // Outstanding
+                { wch: 8 },   // S&P
+                { wch: 10 },  // Moody's
+                { wch: 8 },   // Fitch
+                { wch: 8 },   // Rating
+                { wch: 8 },   // Group
                 { wch: 20 }   // Collateral
             ];
 
